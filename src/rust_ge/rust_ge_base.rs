@@ -25,7 +25,7 @@ pub trait AbstractGame {
         canvas.present();
         let mut event_pump = sdl_context.event_pump().unwrap();
         let mut i = 0;
-        let mut dt = Duration::from_secs(0);
+        let mut _dt = Duration::from_secs(0);
         'running: loop {
             i = (i + 1) % 255;
             canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
@@ -42,7 +42,7 @@ pub trait AbstractGame {
             // The rest of the game loop goes here...
 
             canvas.present();
-            dt = frame_rate.wait_for_next_frame();
+            _dt = frame_rate.wait_for_next_frame();
         }
     }
 
