@@ -40,13 +40,14 @@ pub trait AbstractGame {
                 }
             }
             // The rest of the game loop goes here...
+            self.on_frame();
 
             canvas.present();
             _dt = frame_rate.wait_for_next_frame();
         }
     }
 
-    /*fn draw(&self, sprites: &Rust_ge_sprite_set);
+    fn draw(&self, sprites: &Rust_ge_sprite_set);
 
     fn on_frame(&self, dt: f64);
 
@@ -64,5 +65,5 @@ pub trait AbstractGame {
 
     fn on_start(&self);
 
-    fn on_quit(&self);*/
+    fn on_quit(&self);
 }
