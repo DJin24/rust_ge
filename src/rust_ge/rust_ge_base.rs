@@ -1,5 +1,8 @@
 extern crate sdl2;
 
+use self::sdl2::EventPump;
+use crate::rust_ge::rust_ge_engine::Engine;
+use crate::rust_ge::rust_ge_event::{map_key, Key, Mouse_button};
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
@@ -28,46 +31,67 @@ pub trait Abstract_game {
             canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
             canvas.clear();
             for event in event_pump.poll_iter() {
-                match event {
-                    Event::Quit { .. }
-                    | Event::KeyDown {
-                        keycode: Some(Keycode::Escape),
-                        ..
-                    } => break 'running,
-                    Event::MouseButtonDown {
-                        mouse_btn: Some(input),
-                        ..
-                    } => {
-                        //TODO rust_ge_event.map_button()
-                    }
-                    _ => {}
-                }
+                self.handle_events(event);
             }
             // The rest of the game loop goes here...
-            self.on_frame();
 
             canvas.present();
             ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
         }
     }
 
-    fn draw(&self, sprites: &Rust_ge_sprite_set) {}
+    //fn draw(&self, sprites: &Rust_ge_sprite_set) {}
 
     fn on_frame(&self, dt: f64) {}
 
-    fn on_key(&self, key: Rust_ge_key) {}
+    fn on_key(&self, key: Key) {}
 
-    fn on_key_down(&self, key: Rust_ge_key) {}
+    fn on_key_down(&self, key: Key) {}
 
-    fn on_key_up(&self, key: Rust_ge_key) {}
+    fn on_key_up(&self, key: Key) {}
 
-    fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position) {}
+    /*fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position) {}
 
     fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Position) {}
 
-    fn on_mouse_move(&self, mouse_button: Mouse_button, posn: Position) {}
+    fn on_mouse_move(&self, mouse_button: Mouse_button, posn: Position) {}*/
 
     fn on_start(&self) {}
 
     fn on_quit(&self) {}
+
+    fn handle_events(&self, event: Event) {
+        match event {
+            Event::Quit { .. }
+            | Event::KeyDown {
+                keycode: Some(Keycode::Escape),
+                ..
+            } => self.on_quit(), //TODO Make this quit the game engine run
+            Event::KeyDown {
+                keycode: Some(key_code),
+                repeat: repeat,
+                ..
+            } => {
+                if let Some(key) = map_key(key_code) {
+                    println!("{:?}", key);
+                    if !repeat {
+                        self.on_key_down(key);
+                    }
+                    if !key.is_textual() {
+                        self.on_key(key);
+                    }
+                };
+            }
+            Event::KeyUp {
+                keycode: Some(key_code),
+                ..
+            } => {
+                if let Some(key) = map_key(key_code) {
+                    println!("{:?}", key);
+                    self.on_key_up(key);
+                };
+            }
+            _ => {}
+        }
+    }
 }
