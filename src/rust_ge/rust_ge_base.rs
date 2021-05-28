@@ -3,11 +3,13 @@ extern crate sdl2;
 use self::sdl2::EventPump;
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{map_key, Key, Mouse_button};
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
+use ::sdl2::event::Event;
+use ::sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use std::time::Duration;
 use crate::rust_ge::frame_rate::FrameRate;
+use std::collections::HashSet;
+use crate::rust_ge::sprites::Sprite;
 
 pub trait AbstractGame {
     fn run(&self) {
@@ -48,20 +50,16 @@ pub trait AbstractGame {
                 }
             }
 
-            //TODO Fix frame rate using Jackson's code
-            let frame_time = Duration::new(0, 1_000_000_000u32 / 60);
-            self.on_frame((frame_time.as_secs_f64()));
-
             canvas.present();
+            //TODO Fix frame rate using Jackson's code -- Done
             _dt = frame_rate.wait_for_next_frame();
-
         }
 
         self.on_quit()
     }
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
-    //fn draw(&self, sprites: &Sprite_set) {}
+    fn draw(&self, sprites: &mut HashSet<Sprite>) {}
 
     fn on_frame(&self, dt: f64) {}
 
