@@ -10,6 +10,8 @@ use std::time::Duration;
 
 pub trait Abstract_game {
     fn run(&self) {
+        self.on_start();
+
         let sdl_context = sdl2::init().unwrap();
         let video_subsystem = sdl_context.video().unwrap();
 
@@ -30,14 +32,26 @@ pub trait Abstract_game {
             i = (i + 1) % 255;
             canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
             canvas.clear();
+
             for event in event_pump.poll_iter() {
-                self.handle_events(event);
+                match event {
+                    Event::Quit { .. }
+                    | Event::KeyDown {
+                        keycode: Some(Keycode::Escape),
+                        ..
+                    } => break 'running,
+                    _ => self.handle_events(event),
+                }
             }
-            // The rest of the game loop goes here...
+
+            let frame_time = Duration::new(0, 1_000_000_000u32 / 60);
+            self.on_frame((frame_time.as_secs_f64()));
 
             canvas.present();
-            ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+            ::std::thread::sleep(frame_time);
         }
+
+        self.on_quit()
     }
 
     //fn draw(&self, sprites: &Rust_ge_sprite_set) {}
@@ -62,11 +76,6 @@ pub trait Abstract_game {
 
     fn handle_events(&self, event: Event) {
         match event {
-            Event::Quit { .. }
-            | Event::KeyDown {
-                keycode: Some(Keycode::Escape),
-                ..
-            } => self.on_quit(), //TODO Make this quit the game engine run
             Event::KeyDown {
                 keycode: Some(key_code),
                 repeat: repeat,
