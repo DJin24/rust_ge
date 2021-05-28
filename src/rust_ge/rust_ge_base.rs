@@ -1,8 +1,8 @@
 extern crate sdl2;
 
-use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::pixels::Color;
 use std::time::Duration;
 
 pub trait Abstract_game {
@@ -10,7 +10,8 @@ pub trait Abstract_game {
         let sdl_context = sdl2::init().unwrap();
         let video_subsystem = sdl_context.video().unwrap();
 
-        let window = video_subsystem.window("rust-sdl2 demo", 800, 600)
+        let window = video_subsystem
+            .window("rust-sdl2 demo", 800, 600)
             .position_centered()
             .build()
             .unwrap();
@@ -28,10 +29,17 @@ pub trait Abstract_game {
             canvas.clear();
             for event in event_pump.poll_iter() {
                 match event {
-                    Event::Quit { .. } |
-                    Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                        break 'running
-                    },
+                    Event::Quit { .. }
+                    | Event::KeyDown {
+                        keycode: Some(Keycode::Escape),
+                        ..
+                    } => break 'running,
+                    Event::MouseButtonDown {
+                        mouse_btn: Some(input),
+                        ..
+                    } => {
+                        //TODO rust_ge_event.map_button()
+                    }
                     _ => {}
                 }
             }
@@ -43,23 +51,23 @@ pub trait Abstract_game {
         }
     }
 
-    fn draw(&self, sprites: &Rust_ge_sprite_set);
+    fn draw(&self, sprites: &Rust_ge_sprite_set) {}
 
-    fn on_frame(&self, dt: f64);
+    fn on_frame(&self, dt: f64) {}
 
-    fn on_key(&self, key: Rust_ge_key);
+    fn on_key(&self, key: Rust_ge_key) {}
 
-    fn on_key_down(&self, key: Rust_ge_key);
+    fn on_key_down(&self, key: Rust_ge_key) {}
 
-    fn on_key_up(&self, key: Rust_ge_key);
+    fn on_key_up(&self, key: Rust_ge_key) {}
 
-    fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position);
+    fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position) {}
 
-    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Position);
+    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Position) {}
 
-    fn on_mouse_move(&self, mouse_button: Mouse_button, posn: Position);
+    fn on_mouse_move(&self, mouse_button: Mouse_button, posn: Position) {}
 
-    fn on_start(&self);
+    fn on_start(&self) {}
 
-    fn on_quit(&self);
+    fn on_quit(&self) {}
 }
