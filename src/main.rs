@@ -1,10 +1,9 @@
 mod rust_ge;
-
-use crate::rust_ge::rust_ge_base::Abstract_game;
+use crate::rust_ge::rust_ge_base::AbstractGame;
 
 struct TestGame {}
 
-impl Abstract_game for TestGame {
+impl AbstractGame for TestGame {
     fn on_start(&self) {
         println!("STARTED");
     }
@@ -15,6 +14,6 @@ impl Abstract_game for TestGame {
 }
 
 pub fn main() {
-    let testGame = TestGame {};
-    testGame.run();
+    let test_game = TestGame{};
+    test_game.run();
 }
