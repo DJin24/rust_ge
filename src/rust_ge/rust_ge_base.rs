@@ -44,6 +44,7 @@ pub trait Abstract_game {
                 }
             }
 
+            //TODO Fix frame rate using Jackson's code
             let frame_time = Duration::new(0, 1_000_000_000u32 / 60);
             self.on_frame((frame_time.as_secs_f64()));
 
@@ -54,7 +55,8 @@ pub trait Abstract_game {
         self.on_quit()
     }
 
-    //fn draw(&self, sprites: &Rust_ge_sprite_set) {}
+    //TODO Add sprite renderer and sprite set so we can draw stuff
+    //fn draw(&self, sprites: &Sprite_set) {}
 
     fn on_frame(&self, dt: f64) {}
 
@@ -64,6 +66,7 @@ pub trait Abstract_game {
 
     fn on_key_up(&self, key: Key) {}
 
+    //TODO These functions, primarily the position stuff
     /*fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position) {}
 
     fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Position) {}
@@ -100,6 +103,7 @@ pub trait Abstract_game {
                     self.on_key_up(key);
                 };
             }
+            //TODO Mouse events
             _ => {}
         }
     }
