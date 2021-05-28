@@ -36,13 +36,14 @@ pub trait Abstract_game {
                 }
             }
             // The rest of the game loop goes here...
+            self.on_frame();
 
             canvas.present();
             ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
         }
     }
 
-    /*fn draw(&self, sprites: &Rust_ge_sprite_set);
+    fn draw(&self, sprites: &Rust_ge_sprite_set);
 
     fn on_frame(&self, dt: f64);
 
@@ -60,5 +61,5 @@ pub trait Abstract_game {
 
     fn on_start(&self);
 
-    fn on_quit(&self);*/
+    fn on_quit(&self);
 }
