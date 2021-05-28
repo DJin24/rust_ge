@@ -11,7 +11,7 @@ use crate::rust_ge::frame_rate::FrameRate;
 use std::collections::HashSet;
 use crate::rust_ge::sprites::Sprite;
 
-pub trait AbstractGame {
+pub trait AbstractGame: Sized {
     fn run(&self) {
     
         self.on_start();
@@ -57,9 +57,11 @@ pub trait AbstractGame {
 
         self.on_quit()
     }
+    
+    fn set_engine(&self, engine: &Engine<Self>);
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
-    fn draw(&self, sprites: &mut HashSet<Sprite>) {}
+    fn draw(&self, dt: Duration, sprites: &mut HashSet<Sprite>) {}
 
     fn on_frame(&self, dt: f64) {}
 
@@ -111,3 +113,8 @@ pub trait AbstractGame {
         }
     }
 }
+
+// struct ConcreteGame<'a> {
+//     abstract_game: AbstractGame,
+//     engine: &'a Engine
+// }
