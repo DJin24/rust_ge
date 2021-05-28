@@ -4,9 +4,12 @@ use sdl2::pixels::Color;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::time::Duration;
+use crate::rust_ge::frame_rate::FrameRate;
 
-pub trait Abstract_game {
+pub trait AbstractGame {
     fn run(&self) {
+        let mut frame_rate = FrameRate::new(5);
+    
         let sdl_context = sdl2::init().unwrap();
         let video_subsystem = sdl_context.video().unwrap();
 
@@ -22,6 +25,7 @@ pub trait Abstract_game {
         canvas.present();
         let mut event_pump = sdl_context.event_pump().unwrap();
         let mut i = 0;
+        let mut dt = Duration::from_secs(0);
         'running: loop {
             i = (i + 1) % 255;
             canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
@@ -38,7 +42,7 @@ pub trait Abstract_game {
             // The rest of the game loop goes here...
 
             canvas.present();
-            ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+            dt = frame_rate.wait_for_next_frame();
         }
     }
 

@@ -1,22 +1,25 @@
+use ::std::time::{Instant, Duration};
+use ::std::thread::sleep;
+
 #[derive(Debug)]
 pub struct FrameRate {
-    last_frame: std::time::Instant,
+    last_frame: Instant,
     curr_fps: usize,
     target_rate: usize,
-    target_dt: std::time::Duration,
+    target_dt: Duration,
 }
 
 impl FrameRate {
     pub fn new(target_rate: usize) -> Self {
         Self {
-            last_frame: std::time::Instant::now(),
+            last_frame: Instant::now(),
             curr_fps: target_rate,
             target_rate,
-            target_dt: std::time::Duration::from_micros((1_000_000 / target_rate) as u64),
+            target_dt: Duration::from_micros((1_000_000 / target_rate) as u64),
         }
     }
-    pub fn wait_for_next_frame(&mut self) -> std::time::Duration {
-        let now = std::time::Instant::now();
+    pub fn wait_for_next_frame(&mut self) -> Duration {
+        let now = Instant::now();
         let dt = now - self.last_frame;
         if dt > self.target_dt {
             self.curr_fps = (1_000_000u128
@@ -26,11 +29,10 @@ impl FrameRate {
             dt
         }
         else {
-            std::thread::sleep(self.target_dt - dt);
+            sleep(self.target_dt - dt);
             self.curr_fps = self.target_rate;
-            self.last_frame = std::time::Instant::now();
+            self.last_frame = Instant::now();
             self.target_dt
         }
     }
 }
-
