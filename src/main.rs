@@ -14,6 +14,6 @@ impl AbstractGame for TestGame {
 }
 
 pub fn main() {
-    let test_game = TestGame{};
+    let test_game = TestGame {};
     test_game.run();
 }

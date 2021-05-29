@@ -1,19 +1,18 @@
 extern crate sdl2;
 
 use self::sdl2::EventPump;
+use crate::rust_ge::frame_rate::FrameRate;
 use crate::rust_ge::rust_ge_engine::Engine;
-use crate::rust_ge::rust_ge_event::{map_key, Key, Mouse_button};
+use crate::rust_ge::rust_ge_event::{map_button, map_key, Key, Mouse_button, Posn};
+use crate::rust_ge::sprites::Sprite;
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use std::time::Duration;
-use crate::rust_ge::frame_rate::FrameRate;
 use std::collections::HashSet;
-use crate::rust_ge::sprites::Sprite;
+use std::time::Duration;
 
 pub trait AbstractGame {
     fn run(&self) {
-    
         self.on_start();
         let mut frame_rate = FrameRate::new(5);
 
@@ -69,12 +68,11 @@ pub trait AbstractGame {
 
     fn on_key_up(&self, key: Key) {}
 
-    //TODO These functions, primarily the position stuff
-    /*fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position) {}
+    fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Posn) {}
 
-    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Position) {}
+    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Posn) {}
 
-    fn on_mouse_move(&self, mouse_button: Mouse_button, posn: Position) {}*/
+    fn on_mouse_move(&self, posn: Posn) {}
 
     fn on_start(&self) {}
 
@@ -106,7 +104,23 @@ pub trait AbstractGame {
                     self.on_key_up(key);
                 };
             }
-            //TODO Mouse events
+            Event::MouseButtonDown {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = map_button(mouse_btn) {
+                    println!("{:?}", mouse_button);
+                    self.on_mouse_down(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseButtonUp {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = map_button(mouse_btn) {
+                    println!("{:?}", mouse_button);
+                    self.on_mouse_up(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseMotion { x, y, .. } => self.on_mouse_move(Posn { x, y }),
             _ => {}
         }
     }
