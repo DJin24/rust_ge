@@ -1,5 +1,5 @@
-use ::std::time::{Instant, Duration};
 use ::std::thread::sleep;
+use ::std::time::{Duration, Instant};
 
 #[derive(Debug)]
 pub struct FrameRate {
@@ -22,13 +22,10 @@ impl FrameRate {
         let now = Instant::now();
         let dt = now - self.last_frame;
         if dt > self.target_dt {
-            self.curr_fps = (1_000_000u128
-                / dt.as_micros())
-                as usize;
+            self.curr_fps = (1_000_000u128 / dt.as_micros()) as usize;
             self.last_frame = now;
             dt
-        }
-        else {
+        } else {
             sleep(self.target_dt - dt);
             self.curr_fps = self.target_rate;
             self.last_frame = Instant::now();

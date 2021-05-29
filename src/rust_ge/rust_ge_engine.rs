@@ -2,14 +2,14 @@ extern crate sdl2;
 
 use self::sdl2::event::Event;
 use crate::rust_ge::rust_ge_base::AbstractGame;
+use crate::rust_ge::sprites::Sprite;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
-use std::time::Duration;
 use std::collections::HashSet;
-use crate::rust_ge::sprites::Sprite;
+use std::time::Duration;
 
 pub struct Engine {
-    game: AbstractGame
+    game: AbstractGame,
 }
 
 impl Engine {
@@ -27,21 +27,19 @@ impl Engine {
 
         canvas.set_draw_color(Color::RGB(0, 255, 255));
         canvas.clear();
-        
+
         loop {
             let mut sprites = HashSet::<Sprite>::new(); // maybe &Sprite, though might be confusing with lifetimes
             self.game.draw(&mut sprites);
             let surfaces = sprites.iter().map(|sprite| sprite.as_sdl_surface());
             let texture_creator = canvas.texture_creator();
             for surface in surfaces {
-                match texture_creator.create_texture_from_surface(surface){
+                match texture_creator.create_texture_from_surface(surface) {
                     Err(_) => panic!("failed to create texture on window"),
-                    Ok(_texture) => ()
+                    Ok(_texture) => (),
                 };
             }
-            
         }
-        
     }
 
     fn handle_events(e: Event) {}

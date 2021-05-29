@@ -21,6 +21,12 @@ pub fn map_button(input: MouseButton) -> Option<Mouse_button> {
 }
 
 #[derive(Copy, Clone, Debug)]
+pub struct Posn {
+    pub x: i32,
+    pub y: i32,
+}
+
+#[derive(Copy, Clone, Debug)]
 pub struct Key {
     key_type: Type,
     code: i32,
