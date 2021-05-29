@@ -58,6 +58,7 @@ pub trait AbstractGame: Sized {
         self.on_quit()
     }
     
+    fn engine(&self) -> &Engine<Self>;
     fn set_engine(&self, engine: &Engine<Self>);
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
@@ -114,7 +115,7 @@ pub trait AbstractGame: Sized {
     }
 }
 
-// struct ConcreteGame<'a> {
-//     abstract_game: AbstractGame,
-//     engine: &'a Engine
-// }
+struct ConcreteGame<'a> {
+    abstract_game: AbstractGame,
+    engine: Option<&'a Engine>
+}
