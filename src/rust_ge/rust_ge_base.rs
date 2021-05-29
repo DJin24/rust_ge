@@ -12,57 +12,19 @@ use std::collections::HashSet;
 use crate::rust_ge::sprites::Sprite;
 
 pub trait AbstractGame: Sized {
-    fn run(&self) {
-    
-        self.on_start();
-        let mut frame_rate = FrameRate::new(5);
-
-        let sdl_context = sdl2::init().unwrap();
-        let video_subsystem = sdl_context.video().unwrap();
-
-        let window = video_subsystem
-            .window("rust-sdl2 demo", 800, 600)
-            .position_centered()
-            .build()
-            .unwrap();
-
-        let mut canvas = window.into_canvas().build().unwrap();
-
-        canvas.set_draw_color(Color::RGB(0, 255, 255));
-        canvas.clear();
-        canvas.present();
-        let mut event_pump = sdl_context.event_pump().unwrap();
-        let mut i = 0;
-        let mut _dt = Duration::from_secs(0);
-        'running: loop {
-            i = (i + 1) % 255;
-            canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
-            canvas.clear();
-
-            for event in event_pump.poll_iter() {
-                match event {
-                    Event::Quit { .. }
-                    | Event::KeyDown {
-                        keycode: Some(Keycode::Escape),
-                        ..
-                    } => break 'running,
-                    _ => self.handle_events(event),
-                }
-            }
-
-            canvas.present();
-            //TODO Fix frame rate using Jackson's code -- Done
-            _dt = frame_rate.wait_for_next_frame();
-        }
-
-        self.on_quit()
+    fn new() -> Self;
+    fn run(game: &mut Self) {
+        let engine = Engine::new(60);
+        game.set_engine(engine);
+        let mut e = game.engine().unwrap();
+        e.run(game);
     }
     
-    fn engine(&self) -> &Engine<Self>;
-    fn set_engine(&self, engine: &Engine<Self>);
+    fn engine(&mut self) -> Option<&mut Engine>;
+    fn set_engine(&mut self, engine: Engine);
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
-    fn draw(&self, dt: Duration, sprites: &mut HashSet<Sprite>) {}
+    fn draw(&self, dt: Duration, sprites: &mut Vec<Sprite>) {}
 
     fn on_frame(&self, dt: f64) {}
 
@@ -113,9 +75,4 @@ pub trait AbstractGame: Sized {
             _ => {}
         }
     }
-}
-
-struct ConcreteGame<'a> {
-    abstract_game: AbstractGame,
-    engine: Option<&'a Engine>
 }
