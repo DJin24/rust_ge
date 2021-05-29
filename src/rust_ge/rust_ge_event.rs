@@ -11,12 +11,14 @@ pub enum Mouse_button {
     right,
 }
 
-pub fn map_button(input: MouseButton) -> Option<Mouse_button> {
-    match input {
-        MouseButton::Left => Some(Mouse_button::left),
-        MouseButton::Middle => Some(Mouse_button::middle),
-        MouseButton::Right => Some(Mouse_button::right),
-        _ => None,
+impl Mouse_button {
+    pub fn map_button(input: MouseButton) -> Option<Mouse_button> {
+        match input {
+            MouseButton::Left => Some(Mouse_button::left),
+            MouseButton::Middle => Some(Mouse_button::middle),
+            MouseButton::Right => Some(Mouse_button::right),
+            _ => None,
+        }
     }
 }
 
@@ -69,32 +71,42 @@ impl Key {
         }
     }
 
+    pub fn map_ascii(input: i32) -> Option<Key> {
+        if input >= 0 && input < 128 {
+            Some(Key::new_key_from_code(input))
+        } else {
+            None
+        }
+    }
+
+    pub fn map_char(input: char) -> Option<Key> {
+        Key::map_ascii(input as i32)
+    }
+
+    pub fn map_key(input: Keycode) -> Option<Key> {
+        if let Some(key) = Key::map_ascii(input as i32) {
+            Some(key)
+        } else {
+            match input {
+                Keycode::Right => Some(Key::new_key_from_type(Type::right)),
+                Keycode::Left => Some(Key::new_key_from_type(Type::left)),
+                Keycode::Down => Some(Key::new_key_from_type(Type::down)),
+                Keycode::Up => Some(Key::new_key_from_type(Type::up)),
+                Keycode::KpEnter => Some(Key::new_key_from_code('\r' as i32)),
+                Keycode::LCtrl => Some(Key::new_key_from_type(Type::control)),
+                Keycode::LShift => Some(Key::new_key_from_type(Type::shift)),
+                Keycode::LAlt => Some(Key::new_key_from_type(Type::alt)),
+                Keycode::LGui => Some(Key::new_key_from_type(Type::command)),
+                Keycode::RCtrl => Some(Key::new_key_from_type(Type::control)),
+                Keycode::RShift => Some(Key::new_key_from_type(Type::shift)),
+                Keycode::RAlt => Some(Key::new_key_from_type(Type::alt)),
+                Keycode::RGui => Some(Key::new_key_from_type(Type::command)),
+                _ => None,
+            }
+        }
+    }
+
     pub fn is_textual(&self) -> bool {
         self.key_type == Type::code
-    }
-}
-
-pub fn map_key(input: Keycode) -> Option<Key> {
-    let ascii_val = input as i32;
-
-    if ascii_val >= 0 && ascii_val < 128 {
-        Some(Key::new_key_from_code(input as i32))
-    } else {
-        match input {
-            Keycode::Right => Some(Key::new_key_from_type(Type::right)),
-            Keycode::Left => Some(Key::new_key_from_type(Type::left)),
-            Keycode::Down => Some(Key::new_key_from_type(Type::down)),
-            Keycode::Up => Some(Key::new_key_from_type(Type::up)),
-            Keycode::KpEnter => Some(Key::new_key_from_code('\r' as i32)),
-            Keycode::LCtrl => Some(Key::new_key_from_type(Type::control)),
-            Keycode::LShift => Some(Key::new_key_from_type(Type::shift)),
-            Keycode::LAlt => Some(Key::new_key_from_type(Type::alt)),
-            Keycode::LGui => Some(Key::new_key_from_type(Type::command)),
-            Keycode::RCtrl => Some(Key::new_key_from_type(Type::control)),
-            Keycode::RShift => Some(Key::new_key_from_type(Type::shift)),
-            Keycode::RAlt => Some(Key::new_key_from_type(Type::alt)),
-            Keycode::RGui => Some(Key::new_key_from_type(Type::command)),
-            _ => None,
-        }
     }
 }
