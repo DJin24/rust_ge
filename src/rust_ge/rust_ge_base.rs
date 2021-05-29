@@ -3,7 +3,7 @@ extern crate sdl2;
 use self::sdl2::EventPump;
 use crate::rust_ge::frame_rate::FrameRate;
 use crate::rust_ge::rust_ge_engine::Engine;
-use crate::rust_ge::rust_ge_event::{map_button, map_key, Key, Mouse_button, Posn};
+use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
 use crate::rust_ge::sprites::Sprite;
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
@@ -80,12 +80,19 @@ pub trait AbstractGame {
 
     fn handle_events(&self, event: Event) {
         match event {
+            Event::TextInput { text, .. } => {
+                for c in text.chars() {
+                    if let Some(key) = Key::map_char(c) {
+                        self.on_key(key);
+                    }
+                }
+            }
             Event::KeyDown {
                 keycode: Some(key_code),
                 repeat: repeat,
                 ..
             } => {
-                if let Some(key) = map_key(key_code) {
+                if let Some(key) = Key::map_key(key_code) {
                     println!("{:?}", key);
                     if !repeat {
                         self.on_key_down(key);
@@ -99,7 +106,7 @@ pub trait AbstractGame {
                 keycode: Some(key_code),
                 ..
             } => {
-                if let Some(key) = map_key(key_code) {
+                if let Some(key) = Key::map_key(key_code) {
                     println!("{:?}", key);
                     self.on_key_up(key);
                 };
@@ -107,7 +114,7 @@ pub trait AbstractGame {
             Event::MouseButtonDown {
                 mouse_btn, x, y, ..
             } => {
-                if let Some(mouse_button) = map_button(mouse_btn) {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
                     println!("{:?}", mouse_button);
                     self.on_mouse_down(mouse_button, Posn { x, y });
                 }
@@ -115,7 +122,7 @@ pub trait AbstractGame {
             Event::MouseButtonUp {
                 mouse_btn, x, y, ..
             } => {
-                if let Some(mouse_button) = map_button(mouse_btn) {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
                     println!("{:?}", mouse_button);
                     self.on_mouse_up(mouse_button, Posn { x, y });
                 }
