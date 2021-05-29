@@ -32,8 +32,10 @@ pub trait AbstractGame {
         canvas.present();
         let mut event_pump = sdl_context.event_pump().unwrap();
         let mut i = 0;
-        let mut _dt = Duration::from_secs(0);
+        let mut dt = Duration::from_secs(0);
         'running: loop {
+            self.on_frame(dt.as_secs_f64());
+
             i = (i + 1) % 255;
             canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
             canvas.clear();
@@ -50,8 +52,7 @@ pub trait AbstractGame {
             }
 
             canvas.present();
-            //TODO Fix frame rate using Jackson's code -- Done
-            _dt = frame_rate.wait_for_next_frame();
+            dt = frame_rate.wait_for_next_frame();
         }
 
         self.on_quit()
