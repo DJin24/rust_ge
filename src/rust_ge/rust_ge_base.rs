@@ -1,27 +1,29 @@
 extern crate sdl2;
 
-use self::sdl2::EventPump;
+use ::sdl2::EventPump;
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{map_key, Key, Mouse_button};
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
-use sdl2::pixels::Color;
-use std::time::Duration;
+use ::sdl2::pixels::Color;
+use ::std::time::Duration;
 use crate::rust_ge::frame_rate::FrameRate;
-use std::collections::HashSet;
+use ::std::collections::HashSet;
 use crate::rust_ge::sprites::Sprite;
+use ::std::cell::RefCell;
+use ::std::rc::Rc;
 
 pub trait AbstractGame: Sized {
     fn new() -> Self;
     fn run(game: &mut Self) {
-        let engine = Engine::new(60);
+        let engine = Rc::new(Engine::new(60));
         game.set_engine(engine);
-        let mut e = game.engine().unwrap();
+        let e = game.engine();
         e.run(game);
     }
     
-    fn engine(&mut self) -> Option<&mut Engine>;
-    fn set_engine(&mut self, engine: Engine);
+    fn engine(&self) -> Rc<Engine>;
+    fn set_engine(&mut self, engine: Rc<Engine>);
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
     fn draw(&self, dt: Duration, sprites: &mut Vec<Sprite>) {}

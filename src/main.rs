@@ -6,9 +6,10 @@ use ::std::time::Duration;
 use ::sdl2::pixels::Color;
 use crate::rust_ge::rust_ge_engine::Engine;
 use std::rc::Rc;
+use std::cell::RefCell;
 
 struct TestGame {
-    engine: Option<Engine>
+    engine: Option<Rc<Engine>>
 }
 
 impl AbstractGame for TestGame {
@@ -22,12 +23,12 @@ impl AbstractGame for TestGame {
         println!("STARTED");
     }
     
-    fn set_engine(&mut self, engine: Engine) {
-        self.engine = Some(engine);
+    fn set_engine(&mut self, engine: Rc<Engine>) {
+        self.engine = Some(engine.clone());
     }
     
-    fn engine(&mut self) -> Option<&mut Engine> {
-        self.engine.as_mut()
+    fn engine(&self) -> Rc<Engine> {
+        self.engine.as_ref().unwrap().clone()
     }
 
     fn on_quit(&self) {
