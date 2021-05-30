@@ -1,6 +1,6 @@
+use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render;
-use sdl2::pixels::Color;
 use sdl2::surface::Surface;
 use std::rc::Rc;
 use std::cell::RefCell;

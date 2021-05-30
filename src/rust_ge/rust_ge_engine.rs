@@ -62,11 +62,12 @@ impl Engine {
             let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
             let texture_creator = data.canvas.texture_creator();
             for surface in surfaces {
-                match texture_creator.create_texture_from_surface(surface){
+                match texture_creator.create_texture_from_surface(surface) {
                     Err(_) => panic!("failed to create texture on window"),
-                    Ok(_texture) => ()
+                    Ok(_texture) => (),
                 };
             }
+<<<<<<< HEAD
             for event in data.event_pump.poll_iter() {
                 match event {
                     Event::Quit { .. }
@@ -82,6 +83,9 @@ impl Engine {
             dt = data.frame_rate.wait_for_next_frame();
         }
         game.on_quit()
+=======
+        }
+>>>>>>> master
     }
     
     fn handle_events(e: Event) {}

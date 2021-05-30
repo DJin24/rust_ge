@@ -2,7 +2,8 @@ extern crate sdl2;
 
 use ::sdl2::EventPump;
 use crate::rust_ge::rust_ge_engine::Engine;
-use crate::rust_ge::rust_ge_event::{map_key, Key, Mouse_button};
+use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
+use crate::rust_ge::sprites::Sprite;
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use ::sdl2::pixels::Color;
@@ -36,12 +37,11 @@ pub trait AbstractGame: Sized {
 
     fn on_key_up(&self, key: Key) {}
 
-    //TODO These functions, primarily the position stuff
-    /*fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Position) {}
+    fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Posn) {}
 
-    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Position) {}
+    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Posn) {}
 
-    fn on_mouse_move(&self, mouse_button: Mouse_button, posn: Position) {}*/
+    fn on_mouse_move(&self, posn: Posn) {}
 
     fn on_start(&self) {}
 
@@ -49,12 +49,19 @@ pub trait AbstractGame: Sized {
 
     fn handle_events(&self, event: Event) {
         match event {
+            Event::TextInput { text, .. } => {
+                for c in text.chars() {
+                    if let Some(key) = Key::map_char(c) {
+                        self.on_key(key);
+                    }
+                }
+            }
             Event::KeyDown {
                 keycode: Some(key_code),
                 repeat: repeat,
                 ..
             } => {
-                if let Some(key) = map_key(key_code) {
+                if let Some(key) = Key::map_key(key_code) {
                     println!("{:?}", key);
                     if !repeat {
                         self.on_key_down(key);
@@ -68,12 +75,28 @@ pub trait AbstractGame: Sized {
                 keycode: Some(key_code),
                 ..
             } => {
-                if let Some(key) = map_key(key_code) {
+                if let Some(key) = Key::map_key(key_code) {
                     println!("{:?}", key);
                     self.on_key_up(key);
                 };
             }
-            //TODO Mouse events
+            Event::MouseButtonDown {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
+                    println!("{:?}", mouse_button);
+                    self.on_mouse_down(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseButtonUp {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
+                    println!("{:?}", mouse_button);
+                    self.on_mouse_up(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseMotion { x, y, .. } => self.on_mouse_move(Posn { x, y }),
             _ => {}
         }
     }
