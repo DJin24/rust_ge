@@ -35,6 +35,7 @@ impl AbstractGame for TestGame {
         println!("QUIT");
     }
     
+    // Should create a rectangle in the middle of the screen
     fn draw(&self, dt: Duration, sprites: &mut Vec<Sprite>) {
         let sprite = Sprite::rectangle(0, 0, 16, 16, Color::BLACK);
         sprites.push(sprite);

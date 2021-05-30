@@ -24,6 +24,7 @@ pub struct Engine {
     data: RefCell<EngineData>
 }
 
+// Instead of an engine owning a game, it just is created and then accepts a game as a parameter to run
 impl Engine {
     pub fn new(fr: usize) -> Self {
         let mut frame_rate = FrameRate::new(fr);
@@ -53,12 +54,16 @@ impl Engine {
         data.canvas.set_draw_color(Color::RGB(0, 255, 255));
         data.canvas.clear();
         data.canvas.present();
-        let mut i = 0;
         let mut dt = Duration::from_secs(0);
         'running: loop {
             data.canvas.clear();
-            let mut sprites = Vec::<Sprite>::new(); // maybe &Sprite, though might be confusing with lifetimes
+            
+            // maybe &Sprite, though might be confusing with lifetimes
+            // Rc's would solve the dropping issue, but could lead to a memory leak
+            let mut sprites = Vec::<Sprite>::new(); 
             game.draw(dt, &mut sprites);
+            
+            // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
             let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
             let texture_creator = data.canvas.texture_creator();
             for surface in surfaces {

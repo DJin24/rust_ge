@@ -10,10 +10,10 @@ use ::sdl2::pixels::Color;
 use ::std::time::Duration;
 use crate::rust_ge::frame_rate::FrameRate;
 use ::std::collections::HashSet;
-use crate::rust_ge::sprites::Sprite;
 use ::std::cell::RefCell;
 use ::std::rc::Rc;
 
+// Games have Rc's to their engines when they are run
 pub trait AbstractGame: Sized {
     fn new() -> Self;
     fn run(game: &mut Self) {

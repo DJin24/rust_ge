@@ -10,6 +10,7 @@ use std::ops::DerefMut;
 
 pub struct Sprite<'a> {
     shape: Rect, // has position and size of sprite
+    // I don't actually use a surface anymore, lifetimes were too hard to deal with
     surface: Option<Surface<'a>>, // probably a better way to store a bitmap -- maybe we just store the whole sdl2_surface?
     pixels: Box<[u8; 1024]>
 }
@@ -21,7 +22,7 @@ impl<'a> Sprite<'a> {
             surface: None,
             pixels: Box::new([8u8; 4 * 256])
         };
-        let mut d = me.pixels.as_mut();
+        // let mut d = me.pixels.as_mut();
         // me.surface = Some(sdl2::surface::Surface::from_data(d, 16, 16, 16*4, sdl2::pixels::PixelFormatEnum::RGBA8888).unwrap());
         me
     }
