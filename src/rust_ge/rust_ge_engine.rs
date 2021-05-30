@@ -67,7 +67,6 @@ impl Engine {
                     Ok(_texture) => (),
                 };
             }
-<<<<<<< HEAD
             for event in data.event_pump.poll_iter() {
                 match event {
                     Event::Quit { .. }
@@ -83,9 +82,6 @@ impl Engine {
             dt = data.frame_rate.wait_for_next_frame();
         }
         game.on_quit()
-=======
-        }
->>>>>>> master
     }
     
     fn handle_events(e: Event) {}
