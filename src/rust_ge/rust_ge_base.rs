@@ -26,39 +26,7 @@ pub trait AbstractGame: Sized {
     fn engine(&self) -> Rc<Engine>;
     fn set_engine(&mut self, engine: Rc<Engine>);
 
-        //     // Drawing
-        //
-        //     let mut sprites = Vec::<Sprite>::new(); // maybe &Sprite, though might be confusing with lifetimes
-        //
-        //     self.draw(&mut sprites);
-        //
-        //     //let surfaces = sprites.iter().map(|sprite| sprite.as_sdl_surface());
-        //     let texture_creator = canvas.texture_creator();
-        //     for sprite in sprites {
-        //         match sprite.shape_type() {
-        //             ShapeTypes::Rect => {
-        //                 canvas.set_draw_color(sprite.color());
-        //                 canvas.draw_rect(sprite.shape());
-        //             }
-        //             ShapeTypes::FilledRect => {
-        //                 canvas.set_draw_color(sprite.color());
-        //                 canvas.fill_rect(Some(sprite.shape()));
-        //             }
-        //             _ => ()
-        //         };
-        //         // match texture_creator.create_texture_from_surface(surface) {
-        //         //     Err(_) => panic!("failed to create texture on window"),
-        //         //     Ok(_texture) => {
-        //         //
-        //         //     },
-        //         // };
-        //     }
-        //
-        //     canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
-        //
-        //     canvas.present();
-        //     dt = frame_rate.wait_for_next_frame();
-        // }
+
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
     fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {}

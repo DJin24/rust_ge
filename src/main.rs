@@ -49,7 +49,7 @@ impl AbstractGame for TestGame {
     }
 
     fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {
-        let my_box = Sprite::filled_rectangle(self.click_loc.x, self.click_loc.y, 20, 20, Color::MAGENTA);
+        let my_box = Sprite::filled_rectangle(self.click_loc.x, self.click_loc.y, 20, 20, Color::RED);
         let filled_box = Sprite::rectangle(self.r_click_loc.x, self.r_click_loc.y, 20, 20, Color::GREEN);
         sprites.push(my_box);
         sprites.push(filled_box);
