@@ -23,7 +23,7 @@ impl<'a> Sprite<'a> {
             shape_type: ShapeTypes::Rect,
             shape: Rect::new(x, y, width, height),
             color: color,
-            surface: Surface::new(width, height, PixelFormatEnum::RGBA4444).unwrap(), // TODO this should probably be handled
+            surface: Surface::new(width, height, PixelFormatEnum::RGBA8888).unwrap(), // TODO this should probably be handled
         }
     }
     pub fn filled_rectangle(x: i32, y: i32, height: u32, width: u32, color: Color) -> Self {
@@ -31,7 +31,7 @@ impl<'a> Sprite<'a> {
             shape_type: ShapeTypes::FilledRect,
             shape: Rect::new(x, y, width, height),
             color: color,
-            surface: Surface::new(width, height, PixelFormatEnum::RGBA4444).unwrap(), // TODO this should probably be handled
+            surface: Surface::new(width, height, PixelFormatEnum::RGBA8888).unwrap(), // TODO this should probably be handled
         }
     }
 
