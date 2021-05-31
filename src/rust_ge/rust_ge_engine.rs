@@ -1,18 +1,18 @@
 extern crate sdl2;
 
-use ::sdl2::event::Event;
+use crate::rust_ge::frame_rate::FrameRate;
 use crate::rust_ge::rust_ge_base::AbstractGame;
+use crate::rust_ge::sprites::{ShapeTypes, Sprite};
+use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use ::sdl2::pixels::Color;
-use ::std::time::Duration;
-use ::std::collections::HashSet;
-use crate::rust_ge::sprites::{Sprite, ShapeTypes};
-use crate::rust_ge::frame_rate::FrameRate;
-use ::std::rc::Rc;
 use ::sdl2::render::Canvas;
 use ::sdl2::video::Window;
-use ::std::cell::RefCell;
 use ::sdl2::EventPump;
+use ::std::cell::RefCell;
+use ::std::collections::HashSet;
+use ::std::rc::Rc;
+use ::std::time::Duration;
 
 struct EngineData {
     canvas: Canvas<Window>,
@@ -45,9 +45,7 @@ impl Engine {
             frame_rate,
             event_pump,
         });
-        Self {
-            data
-        }
+        Self { data }
     }
 
     pub fn run<Game: AbstractGame + Sized>(&self, game: &mut Game) {
@@ -61,13 +59,10 @@ impl Engine {
             data.canvas.set_draw_color(Color::BLACK);
             data.canvas.clear();
 
-
-
             // maybe &Sprite, though might be confusing with lifetimes
             // Rc's would solve the dropping issue, but could lead to a memory leak
             let mut sprites = Vec::<Sprite>::new();
             game.draw(dt, &mut sprites);
-
 
             // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
             // let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
@@ -82,7 +77,7 @@ impl Engine {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.fill_rect(Some(sprite.shape()));
                     }
-                    _ => ()
+                    _ => (),
                 };
                 // match texture_creator.create_texture_from_surface(surface) {
                 //     Err(_) => panic!("failed to create texture on window"),

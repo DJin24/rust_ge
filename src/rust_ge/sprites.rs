@@ -2,11 +2,11 @@ use sdl2::pixels::{Color, PixelFormatEnum};
 use sdl2::rect::Rect;
 use sdl2::render;
 use sdl2::surface::Surface;
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::borrow::BorrowMut;
+use std::cell::RefCell;
 use std::ops::Deref;
 use std::ops::DerefMut;
+use std::rc::Rc;
 
 pub enum ShapeTypes {
     Rect,
@@ -19,7 +19,7 @@ pub struct Sprite {
     shape: Rect,
     // has position and size of sprite
     color: Color,
-    pixels: Box<[u8; 1024]>
+    pixels: Box<[u8; 1024]>,
 }
 
 impl Sprite {
@@ -28,15 +28,15 @@ impl Sprite {
             shape_type: ShapeTypes::Rect,
             shape: Rect::new(x, y, width, height),
             color: color,
-            pixels: Box::new([8u8; 4 * 256])
-                    }
+            pixels: Box::new([8u8; 4 * 256]),
+        }
     }
     pub fn filled_rectangle(x: i32, y: i32, height: u32, width: u32, color: Color) -> Self {
         Sprite {
             shape_type: ShapeTypes::FilledRect,
             shape: Rect::new(x, y, width, height),
             color: color,
-            pixels: Box::new([8u8; 4 * 256])
+            pixels: Box::new([8u8; 4 * 256]),
         }
     }
 
@@ -44,7 +44,14 @@ impl Sprite {
         todo!();
     }
     pub fn as_sdl_surface(&mut self) -> Surface {
-        sdl2::surface::Surface::from_data(self.pixels.as_mut(), 16, 16, 16*4, sdl2::pixels::PixelFormatEnum::RGBA8888).unwrap()
+        sdl2::surface::Surface::from_data(
+            self.pixels.as_mut(),
+            16,
+            16,
+            16 * 4,
+            sdl2::pixels::PixelFormatEnum::RGBA8888,
+        )
+        .unwrap()
     }
 
     pub fn shape_type(&self) -> &ShapeTypes {
