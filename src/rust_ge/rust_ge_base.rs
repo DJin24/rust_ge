@@ -1,95 +1,67 @@
 extern crate sdl2;
 
-use self::sdl2::EventPump;
-use crate::rust_ge::frame_rate::FrameRate;
+use ::sdl2::EventPump;
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
 use crate::rust_ge::sprites::{Sprite, ShapeTypes};
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
-use sdl2::pixels::Color;
-use std::collections::HashSet;
-use std::time::Duration;
+use ::sdl2::pixels::Color;
+use ::std::time::Duration;
+use crate::rust_ge::frame_rate::FrameRate;
+use ::std::collections::HashSet;
+use ::std::cell::RefCell;
+use ::std::rc::Rc;
 
-pub trait AbstractGame {
-    fn run(&mut self) {
-        self.on_start();
-        let mut frame_rate = FrameRate::new(5);
-
-        let sdl_context = sdl2::init().unwrap();
-        let video_subsystem = sdl_context.video().unwrap();
-
-        let window = video_subsystem
-            .window("rust-sdl2 demo", 800, 600)
-            .position_centered()
-            .build()
-            .unwrap();
-
-        let mut canvas = window.into_canvas().build().unwrap();
-
-        canvas.set_draw_color(Color::RGB(0, 255, 255));
-        canvas.clear();
-        canvas.present();
-        let mut event_pump = sdl_context.event_pump().unwrap();
-        let mut i = 0;
-        let mut dt = Duration::from_secs(0);
-        'running: loop {
-            self.on_frame(dt.as_secs_f64());
-
-            i = (i + 1) % 255;
-            canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
-            canvas.clear();
-
-            for event in event_pump.poll_iter() {
-                match event {
-                    Event::Quit { .. }
-                    | Event::KeyDown {
-                        keycode: Some(Keycode::Escape),
-                        ..
-                    } => break 'running,
-                    _ => self.handle_events(event),
-                }
-            }
-
-            // Drawing
-
-            let mut sprites = Vec::<Sprite>::new(); // maybe &Sprite, though might be confusing with lifetimes
-
-            self.draw(&mut sprites);
-
-            //let surfaces = sprites.iter().map(|sprite| sprite.as_sdl_surface());
-            let texture_creator = canvas.texture_creator();
-            for sprite in sprites {
-                match sprite.shape_type() {
-                    ShapeTypes::Rect => {
-                        canvas.set_draw_color(sprite.color());
-                        canvas.draw_rect(sprite.shape());
-                    }
-                    ShapeTypes::FilledRect => {
-                        canvas.set_draw_color(sprite.color());
-                        canvas.fill_rect(Some(sprite.shape()));
-                    }
-                    _ => ()
-                };
-                // match texture_creator.create_texture_from_surface(surface) {
-                //     Err(_) => panic!("failed to create texture on window"),
-                //     Ok(_texture) => {
-                //
-                //     },
-                // };
-            }
-
-            canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
-
-            canvas.present();
-            dt = frame_rate.wait_for_next_frame();
-        }
-
-        self.on_quit()
+// Games have Rc's to their engines when they are run
+pub trait AbstractGame: Sized {
+    fn new() -> Self;
+    fn run(game: &mut Self) {
+        let engine = Rc::new(Engine::new(60));
+        game.set_engine(engine);
+        let e = game.engine();
+        e.run(game);
     }
 
+    fn engine(&self) -> Rc<Engine>;
+    fn set_engine(&mut self, engine: Rc<Engine>);
+
+        //     // Drawing
+        //
+        //     let mut sprites = Vec::<Sprite>::new(); // maybe &Sprite, though might be confusing with lifetimes
+        //
+        //     self.draw(&mut sprites);
+        //
+        //     //let surfaces = sprites.iter().map(|sprite| sprite.as_sdl_surface());
+        //     let texture_creator = canvas.texture_creator();
+        //     for sprite in sprites {
+        //         match sprite.shape_type() {
+        //             ShapeTypes::Rect => {
+        //                 canvas.set_draw_color(sprite.color());
+        //                 canvas.draw_rect(sprite.shape());
+        //             }
+        //             ShapeTypes::FilledRect => {
+        //                 canvas.set_draw_color(sprite.color());
+        //                 canvas.fill_rect(Some(sprite.shape()));
+        //             }
+        //             _ => ()
+        //         };
+        //         // match texture_creator.create_texture_from_surface(surface) {
+        //         //     Err(_) => panic!("failed to create texture on window"),
+        //         //     Ok(_texture) => {
+        //         //
+        //         //     },
+        //         // };
+        //     }
+        //
+        //     canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
+        //
+        //     canvas.present();
+        //     dt = frame_rate.wait_for_next_frame();
+        // }
+
     //TODO Add sprite renderer and sprite set so we can draw stuff
-    fn draw(&mut self, sprites: &mut Vec<Sprite>) {}
+    fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {}
 
     fn on_frame(&mut self, dt: f64) {}
 
@@ -124,6 +96,7 @@ pub trait AbstractGame {
                 ..
             } => {
                 if let Some(key) = Key::map_key(key_code) {
+                    println!("{:?}", key);
                     if !repeat {
                         println!("Pressed -> {:?}", key);
                         self.on_key_down(key);
