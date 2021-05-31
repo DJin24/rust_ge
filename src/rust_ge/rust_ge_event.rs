@@ -28,6 +28,12 @@ pub struct Posn {
     pub y: i32,
 }
 
+impl Default for Posn {
+    fn default() -> Posn {
+        Posn {x: 0, y: 0}
+    }
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct Key {
     key_type: Type,
