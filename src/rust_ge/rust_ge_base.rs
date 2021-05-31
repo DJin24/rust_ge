@@ -4,7 +4,7 @@ use self::sdl2::EventPump;
 use crate::rust_ge::frame_rate::FrameRate;
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
-use crate::rust_ge::sprites::Sprite;
+use crate::rust_ge::sprites::{Sprite, ShapeTypes};
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use std::time::Duration;
 
 pub trait AbstractGame {
-    fn run(&self) {
+    fn run(&mut self) {
         self.on_start();
         let mut frame_rate = FrameRate::new(5);
 
@@ -51,6 +51,36 @@ pub trait AbstractGame {
                 }
             }
 
+            // Drawing
+
+            let mut sprites = Vec::<Sprite>::new(); // maybe &Sprite, though might be confusing with lifetimes
+
+            self.draw(&mut sprites);
+
+            //let surfaces = sprites.iter().map(|sprite| sprite.as_sdl_surface());
+            let texture_creator = canvas.texture_creator();
+            for sprite in sprites {
+                match sprite.shape_type() {
+                    ShapeTypes::Rect => {
+                        canvas.set_draw_color(sprite.color());
+                        canvas.draw_rect(sprite.shape());
+                    }
+                    ShapeTypes::FilledRect => {
+                        canvas.set_draw_color(sprite.color());
+                        canvas.fill_rect(Some(sprite.shape()));
+                    }
+                    _ => ()
+                };
+                // match texture_creator.create_texture_from_surface(surface) {
+                //     Err(_) => panic!("failed to create texture on window"),
+                //     Ok(_texture) => {
+                //
+                //     },
+                // };
+            }
+
+            canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
+
             canvas.present();
             dt = frame_rate.wait_for_next_frame();
         }
@@ -59,27 +89,27 @@ pub trait AbstractGame {
     }
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
-    fn draw(&self, sprites: &mut HashSet<Sprite>) {}
+    fn draw(&mut self, sprites: &mut Vec<Sprite>) {}
 
-    fn on_frame(&self, dt: f64) {}
+    fn on_frame(&mut self, dt: f64) {}
 
-    fn on_key(&self, key: Key) {}
+    fn on_key(&mut self, key: Key) {}
 
-    fn on_key_down(&self, key: Key) {}
+    fn on_key_down(&mut self, key: Key) {}
 
-    fn on_key_up(&self, key: Key) {}
+    fn on_key_up(&mut self, key: Key) {}
 
-    fn on_mouse_down(&self, mouse_button: Mouse_button, posn: Posn) {}
+    fn on_mouse_down(&mut self, mouse_button: Mouse_button, posn: Posn) {}
 
-    fn on_mouse_up(&self, mouse_button: Mouse_button, posn: Posn) {}
+    fn on_mouse_up(&mut self, mouse_button: Mouse_button, posn: Posn) {}
 
-    fn on_mouse_move(&self, posn: Posn) {}
+    fn on_mouse_move(&mut self, posn: Posn) {}
 
-    fn on_start(&self) {}
+    fn on_start(&mut self) {}
 
-    fn on_quit(&self) {}
+    fn on_quit(&mut self) {}
 
-    fn handle_events(&self, event: Event) {
+    fn handle_events(&mut self, event: Event) {
         match event {
             Event::TextInput { text, .. } => {
                 for c in text.chars() {
@@ -94,7 +124,6 @@ pub trait AbstractGame {
                 ..
             } => {
                 if let Some(key) = Key::map_key(key_code) {
-
                     if !repeat {
                         println!("Pressed -> {:?}", key);
                         self.on_key_down(key);
@@ -104,7 +133,6 @@ pub trait AbstractGame {
                     }
 
                     println!("Held -> {:?}", key);
-
                 };
             }
             Event::KeyUp {
