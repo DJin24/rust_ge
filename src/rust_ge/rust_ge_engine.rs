@@ -62,13 +62,10 @@ impl Engine {
             data.canvas.set_draw_color(Color::BLACK);
             data.canvas.clear();
 
-
-
             // maybe &Sprite, though might be confusing with lifetimes
             // Rc's would solve the dropping issue, but could lead to a memory leak
             let mut sprites = Vec::<Sprite>::new();
             game.draw(dt, &mut sprites);
-
 
             // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
             // let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
@@ -83,7 +80,7 @@ impl Engine {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.fill_rect(Some(sprite.shape()));
                     }
-                    _ => ()
+                    _ => (),
                 };
                 // match texture_creator.create_texture_from_surface(surface) {
                 //     Err(_) => panic!("failed to create texture on window"),

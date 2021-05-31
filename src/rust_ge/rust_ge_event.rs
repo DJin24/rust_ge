@@ -30,7 +30,7 @@ pub struct Posn {
 
 impl Default for Posn {
     fn default() -> Posn {
-        Posn {x: 0, y: 0}
+        Posn { x: 0, y: 0 }
     }
 }
 

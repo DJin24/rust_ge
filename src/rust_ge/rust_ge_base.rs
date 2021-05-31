@@ -3,7 +3,7 @@ extern crate sdl2;
 
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
-use crate::rust_ge::sprites::{Sprite, ShapeTypes};
+use crate::rust_ge::sprites::{ShapeTypes, Sprite};
 use crate::rust_ge::frame_rate::FrameRate;
 use ::sdl2::EventPump;
 use ::sdl2::event::Event;
@@ -26,8 +26,6 @@ pub trait AbstractGame: Sized {
 
     fn engine(&self) -> Rc<Engine>;
     fn set_engine(&mut self, engine: Rc<Engine>);
-
-
 
     //TODO Add sprite renderer and sprite set so we can draw stuff
     fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {}
