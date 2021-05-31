@@ -94,13 +94,17 @@ pub trait AbstractGame {
                 ..
             } => {
                 if let Some(key) = Key::map_key(key_code) {
-                    println!("{:?}", key);
+
                     if !repeat {
+                        println!("Pressed -> {:?}", key);
                         self.on_key_down(key);
                     }
                     if !key.is_textual() {
                         self.on_key(key);
                     }
+
+                    println!("Held -> {:?}", key);
+
                 };
             }
             Event::KeyUp {
@@ -108,7 +112,7 @@ pub trait AbstractGame {
                 ..
             } => {
                 if let Some(key) = Key::map_key(key_code) {
-                    println!("{:?}", key);
+                    println!("Released -> {:?}", key);
                     self.on_key_up(key);
                 };
             }
@@ -116,7 +120,7 @@ pub trait AbstractGame {
                 mouse_btn, x, y, ..
             } => {
                 if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
-                    println!("{:?}", mouse_button);
+                    println!("Mouse Down -> {:?}", mouse_button);
                     self.on_mouse_down(mouse_button, Posn { x, y });
                 }
             }
@@ -124,7 +128,7 @@ pub trait AbstractGame {
                 mouse_btn, x, y, ..
             } => {
                 if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
-                    println!("{:?}", mouse_button);
+                    println!("Mouse Up -> {:?}", mouse_button);
                     self.on_mouse_up(mouse_button, Posn { x, y });
                 }
             }
