@@ -1,14 +1,15 @@
 extern crate sdl2;
 
-use ::sdl2::EventPump;
+
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
 use crate::rust_ge::sprites::{Sprite, ShapeTypes};
+use crate::rust_ge::frame_rate::FrameRate;
+use ::sdl2::EventPump;
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use ::sdl2::pixels::Color;
 use ::std::time::Duration;
-use crate::rust_ge::frame_rate::FrameRate;
 use ::std::collections::HashSet;
 use ::std::cell::RefCell;
 use ::std::rc::Rc;

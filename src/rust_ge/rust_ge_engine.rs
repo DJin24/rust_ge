@@ -1,18 +1,19 @@
 extern crate sdl2;
 
-use ::sdl2::event::Event;
 use crate::rust_ge::rust_ge_base::AbstractGame;
-use ::sdl2::keyboard::Keycode;
-use ::sdl2::pixels::Color;
-use ::std::time::Duration;
-use ::std::collections::HashSet;
 use crate::rust_ge::sprites::{Sprite, ShapeTypes};
 use crate::rust_ge::frame_rate::FrameRate;
-use ::std::rc::Rc;
+use ::sdl2::event::Event;
+use ::sdl2::keyboard::Keycode;
+use ::sdl2::pixels::Color;
 use ::sdl2::render::Canvas;
 use ::sdl2::video::Window;
-use ::std::cell::RefCell;
 use ::sdl2::EventPump;
+use ::std::time::Duration;
+use ::std::collections::HashSet;
+use ::std::rc::Rc;
+use ::std::cell::RefCell;
+
 
 struct EngineData {
     canvas: Canvas<Window>,
