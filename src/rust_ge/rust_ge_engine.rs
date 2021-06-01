@@ -1,18 +1,20 @@
 extern crate sdl2;
 
-use crate::rust_ge::frame_rate::FrameRate;
 use crate::rust_ge::rust_ge_base::AbstractGame;
-use crate::rust_ge::sprites::{ShapeTypes, Sprite};
+use crate::rust_ge::sprites::{Sprite, ShapeTypes};
+use crate::rust_ge::frame_rate::FrameRate;
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use ::sdl2::pixels::Color;
 use ::sdl2::render::Canvas;
 use ::sdl2::video::Window;
 use ::sdl2::EventPump;
-use ::std::cell::RefCell;
+use ::std::time::Duration;
 use ::std::collections::HashSet;
 use ::std::rc::Rc;
-use ::std::time::Duration;
+use ::std::cell::RefCell;
+use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
+
 
 struct EngineData {
     canvas: Canvas<Window>,
@@ -45,7 +47,9 @@ impl Engine {
             frame_rate,
             event_pump,
         });
-        Self { data }
+        Self {
+            data
+        }
     }
 
     pub fn run<Game: AbstractGame + Sized>(&self, game: &mut Game) {
@@ -58,7 +62,8 @@ impl Engine {
         'running: loop {
             data.canvas.set_draw_color(Color::BLACK);
             data.canvas.clear();
-
+            
+            game.on_frame(dt);
             // maybe &Sprite, though might be confusing with lifetimes
             // Rc's would solve the dropping issue, but could lead to a memory leak
             let mut sprites = Vec::<Sprite>::new();
@@ -67,22 +72,27 @@ impl Engine {
             // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
             // let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
             let texture_creator = data.canvas.texture_creator();
-            for sprite in sprites {
+            for mut sprite in sprites {
                 match sprite.shape_type() {
                     ShapeTypes::Rect => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.draw_rect(sprite.shape());
-                    }
+                    },
                     ShapeTypes::FilledRect => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.fill_rect(Some(sprite.shape()));
+                    },
+                    ShapeTypes::Line => {
+                        data.canvas.set_draw_color(sprite.color());
+                        data.canvas.draw_line(sprite.start(), sprite.end().unwrap());
+                    },
+                    ShapeTypes::Point => {
+                        data.canvas.set_draw_color(sprite.color());
+                        data.canvas.draw_point(sprite.start());
                     }
-                    _ => (),
+                    //_ => (),
                 };
-                // match texture_creator.create_texture_from_surface(surface) {
-                //     Err(_) => panic!("failed to create texture on window"),
-                //     Ok(_texture) => (),
-                // };
+
             }
             for event in data.event_pump.poll_iter() {
                 match event {
@@ -91,7 +101,7 @@ impl Engine {
                         keycode: Some(Keycode::Escape),
                         ..
                     } => break 'running,
-                    _ => game.handle_events(event),
+                    _ => Engine::handle_events(game, event),
                 }
             }
             data.canvas.present();
@@ -101,5 +111,60 @@ impl Engine {
         game.on_quit()
     }
 
-    fn handle_events(e: Event) {}
+    fn handle_events<Game: AbstractGame + Sized>(game: &mut Game, event: Event) {
+        match event {
+            Event::TextInput { text, .. } => {
+                for c in text.chars() {
+                    if let Some(key) = Key::map_char(c) {
+                        game.on_key(key);
+                    }
+                }
+            }
+            Event::KeyDown {
+                keycode: Some(key_code),
+                repeat: repeat,
+                ..
+            } => {
+                if let Some(key) = Key::map_key(key_code) {
+                    println!("{:?}", key);
+                    if !repeat {
+                        println!("Pressed -> {:?}", key);
+                        game.on_key_down(key);
+                    }
+                    if !key.is_textual() {
+                        game.on_key(key);
+                    }
+
+                    println!("Held -> {:?}", key);
+                };
+            }
+            Event::KeyUp {
+                keycode: Some(key_code),
+                ..
+            } => {
+                if let Some(key) = Key::map_key(key_code) {
+                    println!("Released -> {:?}", key);
+                    game.on_key_up(key);
+                };
+            }
+            Event::MouseButtonDown {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
+                    println!("Mouse Down -> {:?}", mouse_button);
+                    game.on_mouse_down(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseButtonUp {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
+                    println!("Mouse Up -> {:?}", mouse_button);
+                    game.on_mouse_up(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseMotion { x, y, .. } => game.on_mouse_move(Posn { x, y }),
+            _ => {}
+        }
+    }
 }

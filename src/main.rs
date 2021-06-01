@@ -8,6 +8,7 @@ use ::std::collections::HashSet;
 use ::std::time::Duration;
 use std::cell::RefCell;
 use std::fmt::DebugList;
+use std::path::Path;
 use std::rc::Rc;
 
 struct TestGame {
@@ -23,36 +24,36 @@ impl AbstractGame for TestGame {
             engine: None,
             click_loc: Default::default(),
             r_click_loc: Default::default(),
-        };
+        }
     }
 
-    fn engine(&self) -> Rc<Engine> {
-        self.engine.as_ref().unwrap().clone()
+
+    fn on_start(&mut self) {
+        println!("STARTED");
     }
 
     fn set_engine(&mut self, engine: Rc<Engine>) {
         self.engine = Some(engine.clone());
     }
 
-    fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {
-        let my_box =
-            Sprite::filled_rectangle(self.click_loc.x, self.click_loc.y, 20, 20, Color::RED);
-        let filled_box =
-            Sprite::rectangle(self.r_click_loc.x, self.r_click_loc.y, 20, 20, Color::GREEN);
-        sprites.push(my_box);
-        sprites.push(filled_box);
+    fn engine(&self) -> Rc<Engine> {
+        self.engine.as_ref().unwrap().clone()
     }
 
     fn on_mouse_down(&mut self, mouse_button: Mouse_button, posn: Posn) {
         match mouse_button {
             Mouse_button::left => self.click_loc = posn,
             Mouse_button::right => self.r_click_loc = posn,
-            _ => (),
+            _ => ()
         }
     }
 
-    fn on_start(&mut self) {
-        println!("STARTED");
+    fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {
+        //let my_box = Sprite::filled_rectangle(self.click_loc.x, self.click_loc.y, 20, 20, Color::RED);
+        let filled_box = Sprite::rectangle(self.r_click_loc.x, self.r_click_loc.y, 20, 20, Color::GREEN);
+        let my_box = Sprite::filled_rectangle(self.click_loc.x, self.click_loc.y, 40, 40, Color::RED);
+        sprites.push(my_box);
+        sprites.push(filled_box);
     }
 
     fn on_quit(&mut self) {
