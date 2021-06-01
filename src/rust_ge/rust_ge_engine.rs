@@ -13,6 +13,7 @@ use ::std::time::Duration;
 use ::std::collections::HashSet;
 use ::std::rc::Rc;
 use ::std::cell::RefCell;
+use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
 
 
 struct EngineData {
@@ -88,12 +89,9 @@ impl Engine {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.draw_point(sprite.start());
                     }
-                    _ => (),
+                    //_ => (),
                 };
-                // match texture_creator.create_texture_from_surface(surface) {
-                //     Err(_) => panic!("failed to create texture on window"),
-                //     Ok(_texture) => (),
-                // };
+
             }
             for event in data.event_pump.poll_iter() {
                 match event {
@@ -102,7 +100,7 @@ impl Engine {
                         keycode: Some(Keycode::Escape),
                         ..
                     } => break 'running,
-                    _ => game.handle_events(event),
+                    _ => Engine::handle_events(game, event),
                 }
             }
             data.canvas.present();
@@ -112,5 +110,60 @@ impl Engine {
         game.on_quit()
     }
 
-    fn handle_events(e: Event) {}
+    fn handle_events<Game: AbstractGame + Sized>(game: &mut Game, event: Event) {
+        match event {
+            Event::TextInput { text, .. } => {
+                for c in text.chars() {
+                    if let Some(key) = Key::map_char(c) {
+                        game.on_key(key);
+                    }
+                }
+            }
+            Event::KeyDown {
+                keycode: Some(key_code),
+                repeat: repeat,
+                ..
+            } => {
+                if let Some(key) = Key::map_key(key_code) {
+                    println!("{:?}", key);
+                    if !repeat {
+                        println!("Pressed -> {:?}", key);
+                        game.on_key_down(key);
+                    }
+                    if !key.is_textual() {
+                        game.on_key(key);
+                    }
+
+                    println!("Held -> {:?}", key);
+                };
+            }
+            Event::KeyUp {
+                keycode: Some(key_code),
+                ..
+            } => {
+                if let Some(key) = Key::map_key(key_code) {
+                    println!("Released -> {:?}", key);
+                    game.on_key_up(key);
+                };
+            }
+            Event::MouseButtonDown {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
+                    println!("Mouse Down -> {:?}", mouse_button);
+                    game.on_mouse_down(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseButtonUp {
+                mouse_btn, x, y, ..
+            } => {
+                if let Some(mouse_button) = Mouse_button::map_button(mouse_btn) {
+                    println!("Mouse Up -> {:?}", mouse_button);
+                    game.on_mouse_up(mouse_button, Posn { x, y });
+                }
+            }
+            Event::MouseMotion { x, y, .. } => game.on_mouse_move(Posn { x, y }),
+            _ => {}
+        }
+    }
 }
