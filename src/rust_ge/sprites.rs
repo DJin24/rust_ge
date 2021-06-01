@@ -9,6 +9,7 @@ use std::ops::DerefMut;
 use std::path::Path;
 use std::rc::Rc;
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum ShapeTypes {
     Rect,
     FilledRect,

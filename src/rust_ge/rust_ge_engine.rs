@@ -15,6 +15,10 @@ use ::std::rc::Rc;
 use ::std::cell::RefCell;
 use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
 
+// These should be a property of the engine or game TODO
+pub const WINDOW_HEIGHT : u32 = 600;
+pub const WINDOW_WIDTH : u32 = 800;
+
 
 struct EngineData {
     canvas: Canvas<Window>,
@@ -35,7 +39,7 @@ impl Engine {
         let video_subsystem = sdl_context.video().unwrap();
 
         let window = video_subsystem
-            .window("rust-sdl2 demo", 800, 600)
+            .window("rust-sdl2 demo", WINDOW_WIDTH, WINDOW_HEIGHT)
             .position_centered()
             .build()
             .unwrap();
@@ -71,7 +75,7 @@ impl Engine {
 
             // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
             // let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
-            let texture_creator = data.canvas.texture_creator();
+            // let texture_creator = data.canvas.texture_creator();
             for mut sprite in sprites {
                 match sprite.shape_type() {
                     ShapeTypes::Rect => {
