@@ -1,5 +1,5 @@
 use sdl2::pixels::{Color, PixelFormatEnum};
-use sdl2::rect::{Rect, Point};
+use sdl2::rect::{Point, Rect};
 use sdl2::render;
 use sdl2::surface::Surface;
 use std::borrow::BorrowMut;
@@ -25,7 +25,7 @@ pub struct Sprite {
     // There must be some better way of doing this within the Rect struct,
     // or maybe eliminate the shape field
     start: Point,
-    end: Option<Point>
+    end: Option<Point>,
 }
 
 impl Sprite {
@@ -55,7 +55,7 @@ impl Sprite {
             shape: Rect::new(x1, y1, (x1 - x2).abs() as u32, (y1 - y2).abs() as u32),
             color: color,
             start: Point::new(x1, y1),
-            end: Some(Point::new(x2, y2))
+            end: Some(Point::new(x2, y2)),
         }
     }
 

@@ -1,18 +1,17 @@
 extern crate sdl2;
 
-
+use crate::rust_ge::frame_rate::FrameRate;
 use crate::rust_ge::rust_ge_engine::Engine;
 use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
 use crate::rust_ge::sprites::{ShapeTypes, Sprite};
-use crate::rust_ge::frame_rate::FrameRate;
-use ::sdl2::EventPump;
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use ::sdl2::pixels::Color;
-use ::std::time::Duration;
-use ::std::collections::HashSet;
+use ::sdl2::EventPump;
 use ::std::cell::RefCell;
+use ::std::collections::HashSet;
 use ::std::rc::Rc;
+use ::std::time::Duration;
 
 // Games have Rc's to their engines when they are run
 pub trait AbstractGame: Sized {

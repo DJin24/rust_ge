@@ -3,10 +3,9 @@ extern crate sdl2;
 use self::sdl2::keyboard::Keycode;
 use self::sdl2::mouse::MouseButton;
 use self::sdl2::rect::Point;
-use crate::rust_ge::rust_ge_engine::{WINDOW_WIDTH, WINDOW_HEIGHT};
+use crate::rust_ge::rust_ge_engine::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use sdl2::event::Event;
 use std::ops::Add;
-
 
 #[derive(Copy, Clone, Debug)]
 pub enum Mouse_button {
@@ -47,12 +46,11 @@ impl Add for Posn {
             y: self.y + other.y,
         }
     }
-
 }
 
 impl From<(i32, i32)> for Posn {
     fn from((x, y): (i32, i32)) -> Posn {
-        Posn {x, y}
+        Posn { x, y }
     }
 }
 
@@ -64,13 +62,13 @@ impl From<Posn> for Point {
 
 impl From<Point> for Posn {
     fn from(p: Point) -> Posn {
-        Posn{ x: p.x, y: p.y}
+        Posn { x: p.x, y: p.y }
     }
 }
 
 impl Posn {
     pub fn new(x: i32, y: i32) -> Self {
-        Posn {x, y}
+        Posn { x, y }
     }
 
     /// calculates Pythagorean distance between two `Posn`s
@@ -84,8 +82,9 @@ impl Posn {
     ///
     /// Window size is defined by the [`WINDOW_HEIGHT`] and [`WINDOW_WIDTH`] constants
     pub fn bounded(&self) -> Self {
-        Posn { x: i32::max(0, i32::min(self.x, WINDOW_WIDTH as i32)),
-            y: i32::max( 0,i32::min(self.y, WINDOW_HEIGHT as i32))
+        Posn {
+            x: i32::max(0, i32::min(self.x, WINDOW_WIDTH as i32)),
+            y: i32::max(0, i32::min(self.y, WINDOW_HEIGHT as i32)),
         }
     }
 }

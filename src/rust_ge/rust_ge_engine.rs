@@ -1,24 +1,23 @@
 extern crate sdl2;
 
-use crate::rust_ge::rust_ge_base::AbstractGame;
-use crate::rust_ge::sprites::{Sprite, ShapeTypes};
 use crate::rust_ge::frame_rate::FrameRate;
+use crate::rust_ge::rust_ge_base::AbstractGame;
+use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
+use crate::rust_ge::sprites::{ShapeTypes, Sprite};
 use ::sdl2::event::Event;
 use ::sdl2::keyboard::Keycode;
 use ::sdl2::pixels::Color;
 use ::sdl2::render::Canvas;
 use ::sdl2::video::Window;
 use ::sdl2::EventPump;
-use ::std::time::Duration;
+use ::std::cell::RefCell;
 use ::std::collections::HashSet;
 use ::std::rc::Rc;
-use ::std::cell::RefCell;
-use crate::rust_ge::rust_ge_event::{Key, Mouse_button, Posn};
+use ::std::time::Duration;
 
 // These should be a property of the engine or game TODO
-pub const WINDOW_HEIGHT : u32 = 600;
-pub const WINDOW_WIDTH : u32 = 800;
-
+pub const WINDOW_HEIGHT: u32 = 600;
+pub const WINDOW_WIDTH: u32 = 800;
 
 struct EngineData {
     canvas: Canvas<Window>,
@@ -51,9 +50,7 @@ impl Engine {
             frame_rate,
             event_pump,
         });
-        Self {
-            data
-        }
+        Self { data }
     }
 
     pub fn run<Game: AbstractGame + Sized>(&self, game: &mut Game) {
@@ -66,7 +63,7 @@ impl Engine {
         'running: loop {
             data.canvas.set_draw_color(Color::BLACK);
             data.canvas.clear();
-            
+
             game.on_frame(dt);
             // maybe &Sprite, though might be confusing with lifetimes
             // Rc's would solve the dropping issue, but could lead to a memory leak
@@ -81,22 +78,20 @@ impl Engine {
                     ShapeTypes::Rect => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.draw_rect(sprite.shape());
-                    },
+                    }
                     ShapeTypes::FilledRect => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.fill_rect(Some(sprite.shape()));
-                    },
+                    }
                     ShapeTypes::Line => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.draw_line(sprite.start(), sprite.end().unwrap());
-                    },
+                    }
                     ShapeTypes::Point => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.draw_point(sprite.start());
-                    }
-                    //_ => (),
+                    } //_ => (),
                 };
-
             }
             for event in data.event_pump.poll_iter() {
                 match event {
