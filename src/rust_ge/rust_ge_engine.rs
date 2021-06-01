@@ -62,7 +62,8 @@ impl Engine {
         'running: loop {
             data.canvas.set_draw_color(Color::BLACK);
             data.canvas.clear();
-
+            
+            game.on_frame(dt);
             // maybe &Sprite, though might be confusing with lifetimes
             // Rc's would solve the dropping issue, but could lead to a memory leak
             let mut sprites = Vec::<Sprite>::new();

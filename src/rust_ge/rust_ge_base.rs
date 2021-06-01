@@ -30,7 +30,7 @@ pub trait AbstractGame: Sized {
     //TODO Add sprite renderer and sprite set so we can draw stuff
     fn draw(&mut self, dt: Duration, sprites: &mut Vec<Sprite>) {}
 
-    fn on_frame(&mut self, dt: f64) {}
+    fn on_frame(&mut self, dt: Duration) {}
 
     fn on_key(&mut self, key: Key) {}
 
@@ -47,6 +47,4 @@ pub trait AbstractGame: Sized {
     fn on_start(&mut self) {}
 
     fn on_quit(&mut self) {}
-
-
 }
