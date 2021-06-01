@@ -70,15 +70,23 @@ impl Engine {
             // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
             // let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
             let texture_creator = data.canvas.texture_creator();
-            for sprite in sprites {
+            for mut sprite in sprites {
                 match sprite.shape_type() {
                     ShapeTypes::Rect => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.draw_rect(sprite.shape());
-                    }
+                    },
                     ShapeTypes::FilledRect => {
                         data.canvas.set_draw_color(sprite.color());
                         data.canvas.fill_rect(Some(sprite.shape()));
+                    },
+                    ShapeTypes::Line => {
+                        data.canvas.set_draw_color(sprite.color());
+                        data.canvas.draw_line(sprite.start(), sprite.end().unwrap());
+                    },
+                    ShapeTypes::Point => {
+                        data.canvas.set_draw_color(sprite.color());
+                        data.canvas.draw_point(sprite.start());
                     }
                     _ => (),
                 };
