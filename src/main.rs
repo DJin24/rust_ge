@@ -110,24 +110,26 @@ impl AbstractGame for TestGame {
 
 fn add_dashed_line(p1: Posn, p2: Posn, color: Color, sprite_vec: &mut Vec<Sprite>) {
     const DASH_LENGTH : i32 = 20;
+    const DOUBLE_DASH : i32 = DASH_LENGTH << 1;
 
     //let mut segments : Vec<Sprite> = Vec::new();
 
     let length: i32 = Posn::dist(p1, p2);
 
     if length > 0 {
-        let x_factor: i32 = (p2.x - p1.x).signum() * ((p1.x - p2.x).abs() * DASH_LENGTH) / length;
-        let y_factor: i32 = (p2.y - p1.y).signum() * ((p1.y - p2.y).abs() * DASH_LENGTH) / length;
+        let x_factor: f32 = ((p2.x - p1.x).signum() * (p1.x - p2.x).abs() * DASH_LENGTH) as f32 / length as f32;
+        let y_factor: f32 = ((p2.y - p1.y).signum() * (p1.y - p2.y).abs() * DASH_LENGTH) as f32 / length as f32;
 
         let mut d: i32 = 0;
-        let mut x: i32 = p1.x;
-        let mut y: i32 = p1.y;
+        let mut x: f32 = p1.x as f32;
+        let mut y: f32 = p1.y as f32;
 
         while d < length {
-            sprite_vec.push(Sprite::line(x, y, x + x_factor, y + y_factor, color));
-            d += DASH_LENGTH * 2;
-            x += x_factor * 2;
-            y += y_factor * 2;
+
+            sprite_vec.push(Sprite::line(x as i32, y as i32, (x + x_factor) as i32, (y + y_factor) as i32, color));
+            d += DOUBLE_DASH;
+            x += x_factor * 2.0;
+            y += y_factor * 2.0;
         }
 
         //sprite_vec.push(Sprite::line(x, y, p2.x, p2.y, color));
