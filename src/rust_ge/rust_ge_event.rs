@@ -2,7 +2,11 @@ extern crate sdl2;
 
 use self::sdl2::keyboard::Keycode;
 use self::sdl2::mouse::MouseButton;
+use self::sdl2::rect::Point;
+use crate::rust_ge::rust_ge_engine::{WINDOW_WIDTH, WINDOW_HEIGHT};
 use sdl2::event::Event;
+use std::ops::Add;
+
 
 #[derive(Copy, Clone, Debug)]
 pub enum Mouse_button {
@@ -22,7 +26,7 @@ impl Mouse_button {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Posn {
     pub x: i32,
     pub y: i32,
@@ -34,10 +38,62 @@ impl Default for Posn {
     }
 }
 
+impl Add for Posn {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+
+}
+
+impl From<(i32, i32)> for Posn {
+    fn from((x, y): (i32, i32)) -> Posn {
+        Posn {x, y}
+    }
+}
+
+impl From<Posn> for Point {
+    fn from(p: Posn) -> Point {
+        Point::new(p.x, p.y)
+    }
+}
+
+impl From<Point> for Posn {
+    fn from(p: Point) -> Posn {
+        Posn{ x: p.x, y: p.y}
+    }
+}
+
+impl Posn {
+    pub fn new(x: i32, y: i32) -> Self {
+        Posn {x, y}
+    }
+
+    /// calculates Pythagorean distance between two `Posn`s
+    pub fn dist(a: Posn, b: Posn) -> i32 {
+        let dx = (a.x - b.x).abs();
+        let dy = (a.y - b.y).abs();
+        ((dx * dx + dy * dy) as f64).sqrt() as i32
+    }
+
+    /// limits the `Posn` coordinates to be within the defined window size
+    ///
+    /// Window size is defined by the [`WINDOW_HEIGHT`] and [`WINDOW_WIDTH`] constants
+    pub fn bounded(&self) -> Self {
+        Posn { x: i32::max(0, i32::min(self.x, WINDOW_WIDTH as i32)),
+            y: i32::max( 0,i32::min(self.y, WINDOW_HEIGHT as i32))
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct Key {
-    key_type: Type,
-    code: i32,
+    pub key_type: Type,
+    pub code: i32,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
