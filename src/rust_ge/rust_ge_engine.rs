@@ -30,29 +30,33 @@ pub struct Engine {
 }
 
 // Instead of an engine owning a game, it just is created and then accepts a game as a parameter to run
+/// Engines run structs that implement the AbstractGame trait
+/// Only one Engine can be created for any program
 impl Engine {
-    pub fn new(fr: usize) -> Self {
+    /// Creates a new engine and initializes SDL window and data. 
+    /// Should only be called once, or it will fail the second time.
+    pub fn new(fr: usize) -> Result<Self, String> {
         let mut frame_rate = FrameRate::new(fr);
 
-        let sdl_context = sdl2::init().unwrap();
-        let video_subsystem = sdl_context.video().unwrap();
+        let sdl_context = sdl2::init()?;
+        let video_subsystem = sdl_context.video()?;
 
         let window = video_subsystem
             .window("rust-sdl2 demo", WINDOW_WIDTH, WINDOW_HEIGHT)
             .position_centered()
-            .build()
-            .unwrap();
-        let mut event_pump = sdl_context.event_pump().unwrap();
+            .build()?;
+        let mut event_pump = sdl_context.event_pump()?;
 
-        let mut canvas = window.into_canvas().build().unwrap();
+        let mut canvas = window.into_canvas().build()?;
         let data = RefCell::new(EngineData {
             canvas,
             frame_rate,
             event_pump,
         });
-        Self { data }
+        Ok(Self { data })
     }
-
+    
+    /// Takes an AbstractGame and begins the run loop and runs until a panic or the game is quit
     pub fn run<Game: AbstractGame + Sized>(&self, game: &mut Game) {
         game.on_start();
         let mut data = self.data.borrow_mut();
@@ -65,15 +69,11 @@ impl Engine {
             data.canvas.clear();
 
             game.on_frame(dt);
-            // maybe &Sprite, though might be confusing with lifetimes
-            // Rc's would solve the dropping issue, but could lead to a memory leak
+            
             let mut sprites = Vec::<Sprite>::new();
             game.draw(dt, &mut sprites);
 
-            // Doesn't like this, it looks like the sprites are dropped when the canvas depends on them to stay there
-            // let surfaces = sprites.iter_mut().map(|sprite| sprite.as_sdl_surface());
-            // let texture_creator = data.canvas.texture_creator();
-            for mut sprite in sprites {
+            for sprite in sprites {
                 match sprite.shape_type() {
                     ShapeTypes::Rect => {
                         data.canvas.set_draw_color(sprite.color());
@@ -110,6 +110,7 @@ impl Engine {
         game.on_quit()
     }
 
+    /// Calls the relevant event handler for any SDL2 event
     fn handle_events<Game: AbstractGame + Sized>(game: &mut Game, event: Event) {
         match event {
             Event::TextInput { text, .. } => {
