@@ -17,7 +17,7 @@ use ::std::time::Duration;
 pub trait AbstractGame: Sized {
     fn new() -> Self;
     fn run(game: &mut Self) {
-        let engine = Rc::new(Engine::new(60));
+        let engine = Rc::new(Engine::new(60).unwrap());
         game.set_engine(engine);
         let e = game.engine();
         e.run(game);

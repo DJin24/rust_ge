@@ -1,3 +1,5 @@
+//! This module contains the engine struct and implementation,
+//! which is used to run structs that implement the AbstractGame trait
 extern crate sdl2;
 
 use crate::rust_ge::frame_rate::FrameRate;
@@ -33,7 +35,7 @@ pub struct Engine {
 /// Engines run structs that implement the AbstractGame trait
 /// Only one Engine can be created for any program
 impl Engine {
-    /// Creates a new engine and initializes SDL window and data. 
+    /// Creates a new engine and initializes SDL window and data.
     /// Should only be called once, or it will fail the second time.
     pub fn new(fr: usize) -> Result<Self, String> {
         let mut frame_rate = FrameRate::new(fr);
@@ -44,10 +46,14 @@ impl Engine {
         let window = video_subsystem
             .window("rust-sdl2 demo", WINDOW_WIDTH, WINDOW_HEIGHT)
             .position_centered()
-            .build()?;
+            .build()
+            .map_err(|_| "Could not build Window".to_string())?;
         let mut event_pump = sdl_context.event_pump()?;
 
-        let mut canvas = window.into_canvas().build()?;
+        let mut canvas = window
+            .into_canvas()
+            .build()
+            .map_err(|_| "Could not create canvas".to_string())?;
         let data = RefCell::new(EngineData {
             canvas,
             frame_rate,
@@ -55,7 +61,6 @@ impl Engine {
         });
         Ok(Self { data })
     }
-    
     /// Takes an AbstractGame and begins the run loop and runs until a panic or the game is quit
     pub fn run<Game: AbstractGame + Sized>(&self, game: &mut Game) {
         game.on_start();
@@ -69,7 +74,6 @@ impl Engine {
             data.canvas.clear();
 
             game.on_frame(dt);
-            
             let mut sprites = Vec::<Sprite>::new();
             game.draw(dt, &mut sprites);
 
